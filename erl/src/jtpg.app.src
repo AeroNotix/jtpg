@@ -1,0 +1,15 @@
+{application, jtpg,
+ [
+  {description, ""},
+  {vsn, "1"},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib,
+                  cowboy,
+                  jsx,
+                  cpg
+                 ]},
+  {mod, { jtpg_app, []}},
+  {env, [ ]}
+ ]}.
