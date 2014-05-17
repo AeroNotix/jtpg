@@ -27,3 +27,6 @@
 
   (invoke! [_ test op]
     (throw (UnsupportedOperationException.))))
+
+(defn create-node-list-client []
+  (Pg2NodeListClient. nil))
