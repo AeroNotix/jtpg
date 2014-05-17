@@ -19,11 +19,11 @@
       (c/su
         (c/exec :rm :-rf (str "/tmp/" repo-name))))))
 
-(defrecord Pg2NodeListClient [client]
+(defrecord Pg2NodeListClient [endpoint]
   client/Client
   (setup! [_ _ node]
-    (let [client (str "http://" (name node) ":8080")]
-      (Pg2NodeListClient. client)))
+    (let [endpoint (str "http://" (name node) ":8080/new_pid/")]
+      (Pg2NodeListClient. endpoint)))
 
   (invoke! [_ test op]
     (throw (UnsupportedOperationException.))))
