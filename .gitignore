@@ -1,0 +1,4 @@
+erl/_rel/*
+*.beam
+**/ebin/*
+**/deps/*
