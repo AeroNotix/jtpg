@@ -18,6 +18,10 @@
     (teardown! [_ test node]
       (c/su
         (c/exec :rm :-rf (str "/tmp/" repo-name))))))
+(defn create-new-pid [client n]
+  (let [uri (str (.endpoint client) n)
+        resp @(http/get uri)]
+    (= (:status resp) 200)))
 
 (defrecord Pg2NodeListClient [endpoint]
   client/Client
