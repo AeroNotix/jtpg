@@ -5,7 +5,7 @@
 
 
 (def repo-name "jtpg")
-(def git-repo (format "git@github.com:AeroNotix/%s.git" repo-name))
+(def git-repo (format "https://github.com/AeroNotix/%s.git" repo-name))
 
 (def db
   (reify db/DB
