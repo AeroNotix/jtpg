@@ -5,6 +5,7 @@
             [jepsen.control :as c]
             [jepsen.control.util :as cutil]
             [jepsen.db :as db]
+            [jepsen.util :refer [meh]]
             [org.httpkit.client :as http]))
 
 
@@ -12,26 +13,32 @@
 (def git-repo (format "https://github.com/AeroNotix/%s.git" repo-name))
 (def git-dir (str "/tmp/" repo-name))
 
+(defn erl-release-cmd [cmd]
+  (meh (c/exec (c/lit (str "/tmp/jtpg/erl/_rel/jtpg/bin/jtpg " cmd)))))
+
+(defn kill-release []
+  (meh (c/exec :killall :-9 "beam.smp" "epmd")))
+
 (def db
   (reify db/DB
     (setup! [_ test node]
-      (c/lit "rm -r /tmp/jtpg")
-      (when (not (cutil/file? git-dir))
-        (info node "Downloading git repo.")
-        (c/su
-          (c/cd "/tmp"
-            (c/exec :git :clone git-repo))))
+      (meh (c/exec :rm :-r "/tmp/jtpg/"))
+      (info node "Downloading git repo.")
+      (c/cd "/tmp"
+        (c/exec :git :clone git-repo))
       (c/cd (str "/tmp/" repo-name "/erl")
+        (meh (erl-release-cmd "stop"))
+        (kill-release)
         (info "Location of release: " (str "/tmp/" repo-name "/erl"))
-        (c/lit "./_rel/jtpg/bin/jtpg stop")
         (info node "building jtpg release.")
         (c/exec :make)
-        (c/exec :make :release)
-        (c/lit "/tmp/jtpg/erl/_rel/jtpg/bin/jtpg start")
+        (c/exec :make (name node))
+        (erl-release-cmd "start")
         (Thread/sleep 5000)))
 
     ;; TODO: Stop the Erlang node.
-    (teardown! [_ _ _])))
+    (teardown! [_ _ _]
+      (kill-release))))
 
 (defn create-new-pid [client n]
   (let [uri (str (.endpoint client) n)
