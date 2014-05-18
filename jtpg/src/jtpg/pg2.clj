@@ -1,9 +1,10 @@
 (ns jtpg.pg2
-  (:require [jepsen.db :as db]
-            [jepsen.control.util :as cutil]
-            [cheshire.core :as json]
-            [jepsen.control :as c]
+  (:require [cheshire.core :as json]
+            [clojure.tools.logging  :refer [info]]
             [jepsen.client :as client]
+            [jepsen.control :as c]
+            [jepsen.control.util :as cutil]
+            [jepsen.db :as db]
             [org.httpkit.client :as http]))
 
 
@@ -20,7 +21,9 @@
           (c/cd "/tmp"
             (c/exec :git :clone git-repo))))
       (c/cd (str "/tmp/" repo-name "/erl")
-        (c/exec :make)))
+        (c/exec :make)
+        (c/exec :make :release)
+        (c/lit "./_rel/jtpg/bin/jtpg start")))
 
     ;; TODO: Stop the Erlang node.
     (teardown! [_ _ _])))
