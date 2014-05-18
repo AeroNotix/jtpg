@@ -38,7 +38,7 @@
                    :model (model/set)
                    :nemesis (nemesis/partition-random-halves)
                    :generator (gen/phases
-                                (->> (range)
+                                (->> (range 5000)
                                   (map (fn [x] {:type  :invoke
                                                 :f     :add
                                                 :value x}))
