@@ -13,6 +13,7 @@
 
 (def db
   (reify db/DB
+    ;;  TODO: Run the Erlang node.
     (setup! [_ test node]
       (when (not (cutil/file? git-dir))
         (c/su
@@ -20,6 +21,8 @@
             (c/exec :git :clone git-repo))))
       (c/cd (str "/tmp/" repo-name "/erl")
         (c/exec :make)))
+
+    ;; TODO: Stop the Erlang node.
     (teardown! [_ _ _])))
 
 (defn create-new-pid [client n]
@@ -32,9 +35,12 @@
   (setup! [_ _ node]
     (let [endpoint (str "http://" (name node) ":8080/new_pid/")]
       (Pg2NodeListClient. endpoint)))
-
-  (invoke! [_ test op]
-    (throw (UnsupportedOperationException.)))
+  
+  (invoke! [this test {:keys [value op] :as cmd}]
+    (let [resp (create-new-pid this value)]
+      (if resp
+        (assoc cmd :type :ok)
+        (assoc cmd :type :fail))))
 
   (teardown! [_ _]
     (throw (UnsupportedOperationException.))))
