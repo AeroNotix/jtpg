@@ -46,9 +46,9 @@
                                   gen/seq
                                   (gen/nemesis
                                     (gen/seq
-                                      (cycle [(gen/sleep 5)
+                                      (cycle [(gen/sleep 6)
                                               {:type :info :f :start}
-                                              (gen/sleep 5)
-                                              {:type :info :f :stop}])))))))]
+                                              (gen/sleep 10)
+                                              {:type :info :f :stop}]))))
 
       (println test))))
