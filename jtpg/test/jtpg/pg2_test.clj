@@ -29,7 +29,8 @@
   (binding [jepsen.control/*username* "root"
             jepsen.control/*password* "root"
             jepsen.control/*strict-host-key-checking* :no]
-    (let [test (run!
+    (let [sample-size 25000
+          test (run!
                  (assoc noop-test
                    :name "pg2"
                    :os debian/os
@@ -38,7 +39,7 @@
                    :model (model/set)
                    :nemesis (nemesis/partition-random-halves)
                    :generator (gen/phases
-                                (->> (range 5000)
+                                (->> (range sample-size)
                                   (map (fn [x] {:type  :invoke
                                                 :f     :add
                                                 :value x}))
