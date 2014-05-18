@@ -50,5 +50,7 @@
                                               {:type :info :f :start}
                                               (gen/sleep 10)
                                               {:type :info :f :stop}]))))
+                                (gen/nemesis
+                                  (gen/once {:type :info :f :stop})))))]
 
       (println test))))
