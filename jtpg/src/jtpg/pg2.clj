@@ -13,9 +13,9 @@
 (def git-repo (format "https://github.com/AeroNotix/%s.git" repo-name))
 (def git-dir (str "/tmp/" repo-name))
 
-(defn erl-release-cmd [cmd node]
-  (meh (c/exec (c/lit (format "/tmp/jtpg/erl/_%s/jtpg/bin/jtpg %s"
-                        (name node) cmd)))))
+(defn erl-release-cmd [cmd]
+  (meh (c/exec (c/lit (format "/tmp/jtpg/erl/_rel/jtpg/bin/jtpg %s"
+                        cmd)))))
 
 (defn kill-release []
   (meh (c/exec :killall :-9 "beam.smp" "epmd")))
@@ -28,13 +28,12 @@
       (c/cd "/tmp"
         (c/exec :git :clone git-repo))
       (c/cd (str "/tmp/" repo-name "/erl")
-        (meh (erl-release-cmd "stop" node))
+        (meh (erl-release-cmd "stop"))
         (kill-release)
         (info "Location of release: " (str "/tmp/" repo-name "/erl"))
         (info node "building jtpg release.")
-        (c/exec :make :compile)
-        (c/exec :make node)
-        (erl-release-cmd "start" node)
+        (c/exec :make :deps :compile node)
+        (erl-release-cmd "start")
         (Thread/sleep 5000)))
 
     ;; TODO: Stop the Erlang node.
