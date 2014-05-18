@@ -35,5 +35,19 @@
                    :os debian/os
                    :db db
                    :client (create-node-list-client)
-                   :nemesis (nemesis/partitioner nemesis/bridge)))]
+                   :model (model/set)
+                   :nemesis (nemesis/partition-random-halves)
+                   :generator (gen/phases
+                                (->> (range)
+                                  (map (fn [x] {:type  :invoke
+                                                :f     :add
+                                                :value x}))
+                                  (gen/seq)
+                                  (gen/nemesis
+                                    (gen/seq
+                                      (cycle [(gen/sleep 5)
+                                              {:type :info :f :start}
+                                              (gen/sleep 5)
+                                              {:type :info :f :stop}])))))))]
+
       (println test))))
