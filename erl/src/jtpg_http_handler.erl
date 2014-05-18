@@ -4,7 +4,7 @@
 
 -include("jtpg.hrl").
 
--define(pg, pg2).
+-define(pg, cpg).
 
 init(_Type, Req, _Opts) ->
     {ok, Req, no_state}.
