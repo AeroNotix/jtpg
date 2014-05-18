@@ -43,7 +43,7 @@
                                   (map (fn [x] {:type  :invoke
                                                 :f     :add
                                                 :value x}))
-                                  (gen/seq)
+                                  gen/seq
                                   (gen/nemesis
                                     (gen/seq
                                       (cycle [(gen/sleep 5)
