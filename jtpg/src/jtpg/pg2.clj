@@ -37,10 +37,9 @@
       (Pg2NodeListClient. endpoint)))
   
   (invoke! [this test {:keys [value op] :as cmd}]
-    (let [resp (create-new-pid this value)]
-      (if resp
+      (if (create-new-pid this value)
         (assoc cmd :type :ok)
-        (assoc cmd :type :fail))))
+        (assoc cmd :type :fail)))
 
   (teardown! [_ _]
     (throw (UnsupportedOperationException.))))
