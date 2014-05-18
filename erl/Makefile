@@ -1,4 +1,5 @@
 RELX_CONF=relx.config
+RELX_MULTI_CONF=relx-multi.config
 
 
 all: release
@@ -19,6 +20,12 @@ dialyze:
 
 release: deps compile
 	relx -c $(RELX_CONF)
+
+multi-release: n1 n2 n3 n4 n5
+
+n1 n2 n3 n4 n5:
+	relx -c $(RELX_MULTI_CONF) --overlay_vars files/vars/$@.config -o _$@
+
 
 .PHONY: all \
 	clean \

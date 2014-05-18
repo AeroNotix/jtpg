@@ -3,3 +3,4 @@ erl/_rel/*
 **/ebin/*
 **/deps/*
 /jtpg/store/
+**/_n*/
