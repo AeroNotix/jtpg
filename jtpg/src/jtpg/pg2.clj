@@ -15,6 +15,7 @@
 (def db
   (reify db/DB
     (setup! [_ test node]
+      (c/lit "rm -r /tmp/jtpg")
       (when (not (cutil/file? git-dir))
         (info node "Downloading git repo.")
         (c/su
