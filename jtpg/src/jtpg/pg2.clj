@@ -14,13 +14,14 @@
 
 (def db
   (reify db/DB
-    ;;  TODO: Run the Erlang node.
     (setup! [_ test node]
       (when (not (cutil/file? git-dir))
+        (info node "Downloading git repo.")
         (c/su
           (c/cd "/tmp"
             (c/exec :git :clone git-repo))))
       (c/cd (str "/tmp/" repo-name "/erl")
+        (info node "building jtpg release.")
         (c/exec :make)
         (c/exec :make :release)
         (c/lit "./_rel/jtpg/bin/jtpg start")))
