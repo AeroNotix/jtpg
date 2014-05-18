@@ -1,5 +1,5 @@
 ## Name of the node
--name jtpg
+-sname jtpg
 
 ## Cookie for distributed erlang
 -setcookie jtpg
