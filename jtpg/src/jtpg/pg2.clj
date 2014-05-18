@@ -14,7 +14,7 @@
 (def git-dir (str "/tmp/" repo-name))
 
 (defn erl-release-cmd [cmd node]
-  (meh (c/exec (c/lit (format "/tmp/jtpg/erl/_%s/jtpg/bin/jtpg " cmd (name node))))))
+  (meh (c/exec (c/lit (format "/tmp/jtpg/erl/_%s/jtpg/bin/jtpg %s" (name node) cmd)))))
 
 (defn kill-release []
   (meh (c/exec :killall :-9 "beam.smp" "epmd")))
