@@ -16,13 +16,13 @@
 
 -define(SERVER, ?MODULE).
 
--record(state, {nodes = [] :: list()}).
+-record(state, {nodes = [] :: [atom()]}).
 
 start_link() ->
     {ok, Nodes} = application:get_env(jtpg, nodes),
     gen_server:start_link({local, ?SERVER}, ?MODULE, [Nodes], []).
 
-init([Nodes]) ->
+init([Nodes]) when is_list(Nodes) ->
     NodesExceptMe = Nodes -- [node()],
     Replies = lists:duplicate(length(NodesExceptMe), true),
     Replies = [monitor_node(Node, true) || Node <- NodesExceptMe],    
