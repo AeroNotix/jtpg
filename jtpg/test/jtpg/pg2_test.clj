@@ -14,43 +14,37 @@
             [jtpg.pg2         :refer :all]))
 
 
-(def noop-test
-  "Boring test stub"
-  {:nodes     [:n1 :n2 :n3 :n4 :n5]
-   :os        os/noop
-   :db        jdb/noop
-   :client    client/noop
-   :nemesis   client/noop
-   :generator gen/void
-   :model     model/noop
-   :checker   checker/linearizable})
-
 (deftest group-test
   (binding [jepsen.control/*username* "root"
             jepsen.control/*password* "root"
             jepsen.control/*strict-host-key-checking* :no]
     (let [sample-size 25000
           test (run!
-                 (assoc noop-test
-                   :name "pg2"
-                   :os debian/os
-                   :db db
-                   :client (create-node-list-client)
-                   :model (model/set)
-                   :nemesis (nemesis/partition-random-halves)
-                   :generator (gen/phases
-                                (->> (range sample-size)
-                                  (map (fn [x] {:type  :invoke
-                                                :f     :add
-                                                :value x}))
-                                  gen/seq
-                                  (gen/nemesis
-                                    (gen/seq
-                                      (cycle [(gen/sleep 6)
-                                              {:type :info :f :start}
-                                              (gen/sleep 10)
-                                              {:type :info :f :stop}]))))
-                                (gen/nemesis
-                                  (gen/once {:type :info :f :stop})))))]
-
+                 {:nodes [:n1 :n2 :n3 :n4 :n5]
+                  :name "pg2"
+                  :os debian/os
+                  :db db
+                  :client (create-node-list-client)
+                  :model duplicate-bag
+                  :nemesis (nemesis/partition-random-halves)
+                  :checker duplicate-bag
+                  :generator (gen/phases
+                              (->> (range)
+                                   (map (fn [x] {:type  :invoke
+                                                 :f     :add
+                                                 :value x}))
+                                   gen/seq
+                                   (gen/stagger 1/10)
+                                   (gen/delay 1)
+                                   (gen/nemesis
+                                     (gen/seq
+                                       (cycle [(gen/sleep 60)
+                                               {:type :info :f :start}
+                                               (gen/sleep 300)
+                                               {:type :info :f :stop}])))
+                                   (gen/time-limit 600))
+                              (gen/nemesis
+                                (gen/once {:type :info :f :stop}))
+                              (gen/clients
+                                (gen/once {:type :invoke :f :read})))})]
       (println test))))
