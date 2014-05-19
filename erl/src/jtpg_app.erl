@@ -26,11 +26,7 @@ connect_to_all_nodes([Node|Nodes] = All) ->
     end.
 
 start(_StartType, _StartArgs) ->
-    AllNodes = ['jtpg@192.168.122.11',
-                'jtpg@192.168.122.12',
-                'jtpg@192.168.122.13',
-                'jtpg@192.168.122.14',
-                'jtpg@192.168.122.15'],
+    {ok, AllNodes} = application:get_env(jtpg, nodes),
     ok = connect_to_all_nodes(AllNodes -- [node()]),
     {ok, _} = cpg:start_link(?SCOPE),
     Routes = [{<<"/new_pid/:id">>, jtpg_http_handler, []}],
