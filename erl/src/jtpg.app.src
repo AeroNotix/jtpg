@@ -8,7 +8,8 @@
                   stdlib,
                   cowboy,
                   jsx,
-                  cpg
+                  cpg,
+                  pmap
                  ]},
   {mod, { jtpg_app, []}},
   {env, [ ]
