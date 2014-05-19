@@ -13,6 +13,12 @@
 %% ===================================================================
 
 start(_StartType, _StartArgs) ->
+    [true, true, true, true]
+        = [net_kernel:connect(N) || N <- ['jtpg@192.168.122.11',
+                                          'jtpg@192.168.122.12',
+                                          'jtpg@192.168.122.13',
+                                          'jtpg@192.168.122.14',
+                                          'jtpg@192.168.122.15'] -- [node()]],
     {ok, _} = cpg:start_link(?SCOPE),
     Routes = [{<<"/new_pid/:id">>, jtpg_http_handler, []}],
     Dispatch = cowboy_router:compile([{'_', Routes}]),
