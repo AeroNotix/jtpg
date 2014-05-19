@@ -1,2 +1,8 @@
 ## Name of the node
 -name jtpg@{{ multi_release_ip }}
+
+## Cookie for distributed erlang
+-setcookie jtpg
+
+## Incrizzle the number of processizzles for the vm.
++P 134217727
