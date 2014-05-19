@@ -24,14 +24,11 @@
   (reify db/DB
     (setup! [_ test node]
       (meh (c/exec :rm :-r "/tmp/jtpg/"))
-      (info node "Downloading git repo.")
       (c/cd "/tmp"
         (c/exec :git :clone git-repo))
       (c/cd (str "/tmp/" repo-name "/erl")
         (meh (erl-release-cmd "stop"))
         (kill-release)
-        (info "Location of release: " (str "/tmp/" repo-name "/erl"))
-        (info node "building jtpg release.")
         (c/exec :make :deps :compile node)
         (erl-release-cmd "start")
         (Thread/sleep 5000)))
@@ -43,7 +40,6 @@
 (defn create-new-pid [client n]
   (let [uri (str (.endpoint client) n)
         resp @(http/get uri)]
-    (info "Response status: " (:status resp) "response: " resp)
     (= (:status resp) 200)))
 
 (defrecord Pg2NodeListClient [endpoint]
@@ -54,7 +50,6 @@
   
   (invoke! [this test {:keys [value op] :as cmd}]
       (let [resp (create-new-pid this value)]
-        (info "Response from creating new pid:" resp)
         (if resp
           (assoc cmd :type :ok)
           (assoc cmd :type :fail))))
