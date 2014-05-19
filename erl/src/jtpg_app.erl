@@ -12,13 +12,16 @@
 %% Application callbacks
 %% ===================================================================
 
+
+%% This is pretty dumb since it doesn't deal with other nodes being
+%% down but hey if they aren't up then the tests fail anyway. #yolo
 connect_to_all_nodes([]) -> ok;
 connect_to_all_nodes([Node|Nodes] = All) ->
     case net_kernel:connect(Node) of
         true ->
-            timer:sleep(1000),
             connect_to_all_nodes(Nodes);
         false ->
+            timer:sleep(1000),
             connect_to_all_nodes(All)
     end.
 
