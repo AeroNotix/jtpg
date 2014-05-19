@@ -1,6 +1,7 @@
 -module(jtpg_util).
 
 -export([connect_all_nodes/1]).
+-export([connect_node/1]).
 
 
 %% This is pretty dumb since it doesn't deal with other nodes being
