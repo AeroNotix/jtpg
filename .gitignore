@@ -4,3 +4,4 @@ erl/_rel/*
 **/deps/*
 /jtpg/store/
 **/_n*/
+/erl/erl_crash.dump
