@@ -17,6 +17,6 @@ connect_node(Node) ->
 
 connect_all_nodes([]) -> ok;
 connect_all_nodes(Nodes) when is_list(Nodes) ->
-    Replies = lists:duplicate(length(Nodes), true),
+    Replies = lists:duplicate(length(Nodes), ok),
     Replies = pmap:map(fun connect_node/1, Nodes),
     ok.
