@@ -35,15 +35,10 @@
         (kill-release)
         (c/exec :make :deps :compile node)
         (erl-release-cmd "start")
-        (Thread/sleep 60000)))
+        (Thread/sleep 15000)))
 
     (teardown! [_ _ _]
       (kill-release))))
-
-(defn create-new-pid [client n]
-  (let [uri (str (.endpoint client) n)
-        resp @(http/get uri)]
-    (= (:status resp) 200)))
 
 (defn filter-history-with [history f]
   (->> history
