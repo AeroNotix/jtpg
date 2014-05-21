@@ -60,7 +60,7 @@
                                    (gen/time-limit 200))
                               (gen/nemesis
                                 (gen/once {:type :info :f :stop}))
-                              (gen/delay 60) ; to allow nodes to recluster.
+                              (gen/sleep 60) ; to allow nodes to recluster.
                               (gen/clients
                                 (gen/once {:type :invoke :f :read})))})]
       (pprint (:results test)))))
