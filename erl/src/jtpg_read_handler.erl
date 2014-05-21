@@ -16,7 +16,7 @@ handle(Req, State) ->
                    {error, {no_such_group, GroupName}} ->
                        undefined
                end || GroupName <- Groups],
-    FilteredPids = lists:filter(fun(X) -> X =:= undefined end, AllPids),
+    FilteredPids = lists:filter(fun(X) -> X =/= undefined end, AllPids),
     JSONEncoded = jsx:encode(FilteredPids),
     {ok, Req2} =
         cowboy_req:reply(StatusCode, ?HEADERS, JSONEncoded, Req),
