@@ -86,12 +86,24 @@
 (defn duplicate-bag []
   (DuplicateBag. {}))
 
-(defrecord Pg2NodeListClient [endpoint]
+(defn create-new-pid [client n]
+  (let [uri (str (.newpid client) n)
+        resp @(http/get uri)]
+    (= (:status resp) 200)))
+
+(defn list-all-pids [client]
+  (let [resp @(http/get (.allpids client))]
+    (if (= (:status resp) 200)
+      {:type :ok :value (json/parse-string (:body resp))}
+      {:type :fail :value (:status resp)})))
+
+(defrecord Pg2NodeListClient [newpid allpids]
   client/Client
   (setup! [_ _ node]
-    (let [endpoint (str "http://" (name node) ":8080/new_pid/")]
-      (Pg2NodeListClient. endpoint)))
-  
+    (let [newpid (str "http://" (name node) ":8080/new_pid/")
+          allpids (str "http://" (name node) ":8080/all_pids/")]
+      (Pg2NodeListClient. newpid allpids)))
+
   (invoke! [this test op]
     (case (:f op)
       :add (let [{:keys [value op] :as cmd} op]
@@ -99,9 +111,9 @@
                (if resp
                  (assoc cmd :type :ok)
                  (assoc cmd :type :fail))))
-      :read (throw (IllegalArgumentException.))))
+      :read (merge op (list-all-pids this))))
 
   (teardown! [_ _]))
 
 (defn create-node-list-client []
-  (Pg2NodeListClient. nil))
+  (Pg2NodeListClient. nil nil))
