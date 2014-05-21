@@ -4,8 +4,6 @@
 
 -include("jtpg.hrl").
 
--define(pg, cpg).
-
 init(_Type, Req, _Opts) ->
     {ok, Req, no_state}.
 
@@ -29,7 +27,7 @@ handle(Req, State) ->
                 {500, [{<<"error">>, <<"Unhandled">>}]}
         end,
     JSONEncoded = jsx:encode(Body),
-    {ok, Req3} = cowboy_req:reply(StatusCode, [], JSONEncoded, Req2),
+    {ok, Req3} = cowboy_req:reply(StatusCode, ?HEADERS, JSONEncoded, Req2),
     {ok, Req3, State}.
 
 terminate(_Reason, _Req, _State) ->

@@ -1,1 +1,3 @@
 -define(SCOPE, jepsen).
+-define(pg, cpg).
+-define(HEADERS, [{<<"Content-type">>, <<"application/json">>}]).

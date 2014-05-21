@@ -16,7 +16,8 @@ start(_StartType, _StartArgs) ->
     {ok, AllNodes} = application:get_env(jtpg, nodes),
     ok = jtpg_util:connect_all_nodes(AllNodes -- [node()]),
     {ok, _} = cpg:start_link(?SCOPE),
-    Routes = [{<<"/new_pid/:id">>, jtpg_http_handler, []}],
+    Routes = [{<<"/new_pid/:id">>, jtpg_http_handler, []},
+              {<<"/all_pids">>,    jtpg_read_handler, []}],
     Dispatch = cowboy_router:compile([{'_', Routes}]),
     {ok, _} = cowboy:start_http(jtpg_listener,
                                 100, [{port, 8080}], %% Port shouldn't be hardcoded.
