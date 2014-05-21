@@ -6,3 +6,4 @@ erl/_rel/*
 **/_n*/
 /erl/erl_crash.dump
 /jtpg/timeline.html
+/erl/.rebar/
