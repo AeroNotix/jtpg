@@ -44,21 +44,23 @@
                   :checker (checker/compose {:html    timeline/html
                                              :dupbag  duplicate-bag-check})
                   :generator (gen/phases
-                              (->> (range 30000)
+                              (->> (range 600)
                                    (map (fn [x] {:type  :invoke
                                                  :f     :add
                                                  :value x}))
                                    randomly-duplicate
                                    gen/seq
+                                   (gen/delay 1)
                                    (gen/nemesis
                                      (gen/seq
                                        (cycle [(gen/sleep 15)
                                                {:type :info :f :start}
                                                (gen/sleep 30)
                                                {:type :info :f :stop}])))
-                                   (gen/time-limit 600))
+                                   (gen/time-limit 200))
                               (gen/nemesis
                                 (gen/once {:type :info :f :stop}))
+                              (gen/delay 60) ; to allow nodes to recluster.
                               (gen/clients
                                 (gen/once {:type :invoke :f :read})))})]
       (pprint (:results test)))))
