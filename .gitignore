@@ -5,3 +5,4 @@ erl/_rel/*
 /jtpg/store/
 **/_n*/
 /erl/erl_crash.dump
+/jtpg/timeline.html
