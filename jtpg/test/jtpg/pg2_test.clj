@@ -1,18 +1,32 @@
 (ns jtpg.pg2-test
-  (:use     [jepsen.core])
+  (:use [clojure.pprint]
+        [jepsen.core])
   (:require [clojure.test     :refer :all]
             [jepsen.checker   :as checker]
+            [jepsen.checker.timeline :as timeline]
+            [jepsen.client    :as client]
             [jepsen.db        :as jdb]
             [jepsen.generator :as gen]
             [jepsen.model     :as model]
             [jepsen.nemesis   :as nemesis]
             [jepsen.os        :as os]
-            [jepsen.client    :as client]
             [jepsen.os.debian :as debian]
             [jepsen.report    :as report]
             [jepsen.store     :as store]
             [jtpg.pg2         :refer :all]))
 
+
+(defn randomly-duplicate
+  ([coll]
+     (randomly-duplicate coll 5))
+  ([coll chance]
+     (randomly-duplicate coll chance []))
+  ([[hd & tl] chance curr]
+     (if (nil? hd)
+       (reverse curr)
+       (if (<= (rand-int 100) chance)
+         (recur tl chance (cons hd (cons hd curr)))
+         (recur tl chance (cons hd curr))))))
 
 (deftest group-test
   (binding [jepsen.control/*username* "root"
@@ -25,26 +39,26 @@
                   :os debian/os
                   :db db
                   :client (create-node-list-client)
-                  :model duplicate-bag
+                  :model (duplicate-bag)
                   :nemesis (nemesis/partition-random-halves)
-                  :checker duplicate-bag
+                  :checker (checker/compose {:html    timeline/html
+                                             :dupbag  duplicate-bag-check})
                   :generator (gen/phases
-                              (->> (range)
+                              (->> (range 30000)
                                    (map (fn [x] {:type  :invoke
                                                  :f     :add
                                                  :value x}))
+                                   randomly-duplicate
                                    gen/seq
-                                   (gen/stagger 1/10)
-                                   (gen/delay 1)
                                    (gen/nemesis
                                      (gen/seq
-                                       (cycle [(gen/sleep 60)
+                                       (cycle [(gen/sleep 15)
                                                {:type :info :f :start}
-                                               (gen/sleep 300)
+                                               (gen/sleep 30)
                                                {:type :info :f :stop}])))
                                    (gen/time-limit 600))
                               (gen/nemesis
                                 (gen/once {:type :info :f :stop}))
                               (gen/clients
                                 (gen/once {:type :invoke :f :read})))})]
-      (println test))))
+      (pprint (:results test)))))
