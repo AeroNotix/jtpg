@@ -10,12 +10,14 @@ init(_Type, Req, _Opts) ->
 handle(Req, State) ->
     StatusCode = 200,
     Groups = ?pg:which_groups(?SCOPE),
-    AllPids = [begin
-                   {ok, GroupName, Pids} =
-                       ?pg:get_local_members(?SCOPE, GroupName),
-                   {list_to_binary(GroupName), length(Pids)}
+    AllPids = [case ?pg:get_members(?SCOPE, GroupName) of
+                   {ok, GroupName, Pids} ->
+                       {list_to_binary(GroupName), length(Pids)};
+                   {error, {no_such_group, GroupName}} ->
+                       undefined
                end || GroupName <- Groups],
-    JSONEncoded = jsx:encode(AllPids),
+    FilteredPids = lists:filter(fun(X) -> X =:= undefined end, AllPids),
+    JSONEncoded = jsx:encode(FilteredPids),
     {ok, Req2} =
         cowboy_req:reply(StatusCode, ?HEADERS, JSONEncoded, Req),
     {ok, Req2, State}.
