@@ -54,18 +54,26 @@
     {({1 :gt 0 :eq -1 :lt} (compare av bv)) [a]}))
 
 (defn cmp-dupbag-ops [first second]
-  (merge-with concat (map cmp-dupbag-ops* first second)))
+  (apply merge-with concat (map cmp-dupbag-ops* first second)))
+
+(defn clean-reads [reads]
+  (into {} (map (fn [[a b]] [(Integer. a) b]) (seq reads))))
 
 (def duplicate-bag-check
   (reify checker/Checker
     (check [this test model history]
       (let [invokes    (filter-history-with history knossos/invoke?)
-            adds       (filter-history-with history knossos/ok?)
+            adds       (->> (filter-history-with history knossos/ok?)
+                         seq
+                         sort)
             final-read (->> history
                          (filter knossos/ok?)
                          (filter #(= :read (:f %)))
                          (map :value)
-                         first)
+                         first
+                         clean-reads
+                         seq
+                         sort)
             {:keys [gt eq lt]} (cmp-dupbag-ops adds final-read)]
         {:ok         (jutil/integer-interval-set-str (set eq))
          :lost       (jutil/integer-interval-set-str (set lt))
