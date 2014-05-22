@@ -20,7 +20,7 @@ Method
 ------
 
 * Five Erlang nodes are used.
-* Each node always attempt to reconnect to its neighbours.
+* Each node always attempts to reconnect to its neighbours.
 * Jepsen generates a series of integers which are used as a name for a
   simple pid.
 * The cluster is put through varying splits including:
