@@ -32,3 +32,11 @@ Method
 * If this list of pids (and the number of pids under that name) is the
   same as the ACK'd writes, then pg2 has successfully repaired
   distributed state following a netsplit.
+
+
+Results
+-------
+
+`pg2` and a fork of `pg2` which includes some functionality irrelevant
+to distributed consistency both safely repair individual node's state
+once the cluster has healed. A win!!
