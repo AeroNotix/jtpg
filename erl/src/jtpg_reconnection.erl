@@ -16,7 +16,7 @@
 
 -define(SERVER, ?MODULE).
 
--record(state, {nodes = [] :: [atom()]}).
+-record(state, {nodes = [] :: [node()]}).
 
 start_link() ->
     {ok, Nodes} = application:get_env(jtpg, nodes),
