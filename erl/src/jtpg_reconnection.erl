@@ -15,6 +15,7 @@
 
 
 -define(SERVER, ?MODULE).
+-define(TIMEOUT, 5000).
 
 -record(state, {nodes = [] :: [node()]}).
 
@@ -26,17 +27,27 @@ init([Nodes]) when is_list(Nodes) ->
     NodesExceptMe = Nodes -- [node()],
     Replies = lists:duplicate(length(NodesExceptMe), true),
     Replies = [monitor_node(Node, true) || Node <- NodesExceptMe],    
-    {ok, #state{nodes = NodesExceptMe}}.
+    {ok, #state{nodes = NodesExceptMe}, ?TIMEOUT}.
 
-handle_call({nodedown, Node}, _From, State) ->
-    Reply = true = jtpg_util:connect_node(Node),
-    {reply, Reply, State}.
+handle_call(_Msg, _From, State) ->
+    Reply = ok,
+    {reply, Reply, State, ?TIMEOUT}.
 
 handle_cast(_Msg, State) ->
-    {noreply, State}.
+    {noreply, State, ?TIMEOUT}.
 
-handle_info(_InfoMsg, State) ->
-    {noreply, State}.
+handle_info(timeout, #state{nodes = Nodes} = State) ->
+    case lists:sort(nodes()) =:= list:sort(Nodes) of
+        true ->
+            {noreply, State, ?TIMEOUT};
+        false ->
+            ok = jtpg_util:connect_all_nodes(Nodes),
+            {noreply, State, ?TIMEOUT}
+    end;
+handle_info({nodedown, Node}, State) ->
+    true = jtpg_util:connect_node(Node),
+    true = monitor_node(Node, true),
+    {noreply, State, ?TIMEOUT}.
 
 terminate(_Reason, _State) ->
     ok.
