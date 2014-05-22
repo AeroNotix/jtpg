@@ -1,5 +1,5 @@
 JTPG
 ====
 
-*J*epsen *t*esting various Erlang *p*rocess-*g*roup
+__J__epsen __t__esting various Erlang __p__rocess-__g__roup
 implementations.
