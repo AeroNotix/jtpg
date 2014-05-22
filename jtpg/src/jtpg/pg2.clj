@@ -75,7 +75,11 @@
                          seq
                          sort)
             {:keys [gt eq lt]} (cmp-dupbag-ops adds final-read)]
-        {:ok         (jutil/integer-interval-set-str (set eq))
+        {:valid?     (and
+                       (not (nil? (seq eq)))
+                       (nil? (seq lt))
+                       (nil? (seq gt)))
+         :ok         (jutil/integer-interval-set-str (set eq))
          :lost       (jutil/integer-interval-set-str (set lt))
          :unexpected (jutil/integer-interval-set-str (set gt))}))))
 
